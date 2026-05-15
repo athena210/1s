@@ -15,7 +15,7 @@ fi
 
 rec() {
     DB_PATH="$1"
-    TITLE=$(basename "$DB_PATH")
+    TITLE="$(basename "$DB_PATH")"
     envsubst <<-EOF
 [$TITLE]
 Connect=File="$DB_PATH";
@@ -23,7 +23,7 @@ App=ThickClient
 EOF
 }
 
-mv -f "$start_config" "${start_config}.bak"
+[ ! -f "$start_config" ] || mv -f "$start_config" "${start_config}.bak"
 find "$db_storage" \
     -path "$db_storage/lost+found" -prune -o \
     -name "a8b" -type d -prune -o \
