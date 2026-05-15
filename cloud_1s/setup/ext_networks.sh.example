@@ -4,7 +4,7 @@ docker network create -d bridge \
   --internal \
   --subnet=10.0.0.0/24 \
   --gateway=10.0.0.1 \
-  cluster_net
+  cluster_1s-net
 
 
 docker network create -d macvlan \

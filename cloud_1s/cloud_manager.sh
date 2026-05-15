@@ -29,7 +29,7 @@ long2ip() {
 
 
 get_free_ip() {
-    NET_NAME="cluster_net"
+    NET_NAME="cluster_1s-net"
     RESERVED_NUM=6
 
     # Get network cidr (10.0.0.0/24)
@@ -123,7 +123,7 @@ case "$COMMAND" in
         ;;
 
     net)
-        docker network inspect cluster_net | jq -r '
+        docker network inspect cluster_1s-net | jq -r '
             .[] | .Containers | to_entries | map({
                 ip: .value.IPv4Address | split("/")[0],
                 name: .value.Name,

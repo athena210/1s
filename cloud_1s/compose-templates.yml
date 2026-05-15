@@ -13,7 +13,7 @@ secrets:
 
 
 networks:
-  cluster_net:
+  cluster_1s-net:
     external: true
   vlan62-net:
     name: vlan62-net
@@ -40,7 +40,7 @@ services:
     networks:
       vlan62-net:
         ipv4_address: ${PUBLIC_IP_ADMIN_1S}
-      cluster_net:
+      cluster_1s-net:
         ipv4_address: ${CLUSTER_IP_ADMIN_1S}
     environment:
       - HASP_SERVER=${HASP_SERVER}
@@ -72,7 +72,7 @@ services:
       ### for default route
       - NET_ADMIN
     networks:
-      cluster_net:
+      cluster_1s-net:
         ipv4_address: ${CLUSTER_IP_BACKUP_1S}
     environment:
       - CLUSTER_GW=${CLUSTER_GW}
@@ -112,7 +112,7 @@ services:
     networks:
       vlan62-net:
         ipv4_address: ${PUBLIC_IP_GATE_1S}
-      cluster_net:
+      cluster_1s-net:
         ipv4_address: ${CLUSTER_GW}
     environment:
       - USE_DNS=${PUBLIC_DNS}
@@ -130,7 +130,7 @@ services:
     container_name: ${BASE_NAME:-redis_1s}
     restart: unless-stopped
     networks:
-      cluster_net:
+      cluster_1s-net:
         ipv4_address: ${CLUSTER_IP_REDIS_1S}
     dns:
       - ${CLUSTER_DNS}
@@ -171,7 +171,7 @@ services:
       #### for default route
       - NET_ADMIN
     networks:
-      cluster_net:
+      cluster_1s-net:
         ipv4_address: ${CLUSTER_IP}
     environment:
       - BASE_NAME=${BASE_NAME}
@@ -192,7 +192,7 @@ services:
       - ${BASE_DIR:-none}:/db
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=cluster_net"
+      - "traefik.docker.network=cluster_1s-net"
       - "traefik.http.services.${BASE_NAME}.loadbalancer.server.port=80"
       - "traefik.http.routers.${BASE_NAME}.rule=PathPrefix(`/${BASE_NAME}`)"
       - "traefik.http.routers.${BASE_NAME}.entrypoints=1s"
