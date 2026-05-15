@@ -1,0 +1,15 @@
+<config xmlns="http://v8.1c.ru/v8/tech-log">
+    <log location="/var/log/1s" format="json" history="3" placement="plain">
+
+        <event>
+            <eq property="name" value="lic"/>
+        </event>
+
+        <event>
+            <eq property="name" value="sesn"/>
+        </event>
+
+        <property name="all"/>
+
+    </log>
+</config>

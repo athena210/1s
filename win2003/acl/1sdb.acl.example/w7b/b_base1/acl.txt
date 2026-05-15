@@ -1,0 +1,19 @@
+﻿# 1) ACL file must be UTF-8
+# 2) If empty or no ACL file then just inherit parent perm
+# 3) <-NOPARENTS-> disables parent inheritance
+# 4) Only 2 modes:
+#     FULL
+#     TRAVERSE
+###################
+# for ROOT directory
+###################
+#<-NOPARENTS->
+#NT AUTHORITY\SYSTEM:FULL
+#DOMAIN\1S_admins:FULL
+#DOMAIN\1S_users:TRAVERSE
+
+
+###################
+# for DATABASE directory
+###################
+DOMAIN\user1:FULL

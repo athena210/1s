@@ -1,0 +1,4 @@
+@echo off
+
+SET "ACLDIR=1sdb.acl"
+SET "ROOTDIR1=E:\1sdb"

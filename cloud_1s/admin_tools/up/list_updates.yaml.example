@@ -1,0 +1,25 @@
+vars:
+  dir_b83_basic:    /srv/1sadmin/1c8_templates/1c/AccountingBase
+  dir_b83_reg:      /srv/1sadmin/1c8_templates/1c/Accounting
+  dir_b83_corp:     /srv/1sadmin/1c8_templates/1c/AccountingCorp
+  dir_z83_reg:      /srv/1sadmin/1c8_templates/1c/hrm
+
+  b_ver1:   '3_0_1_1'
+
+  z_ver1:   '3_1_1_1'
+  z_ver2:   '3_1_1_2'
+
+
+updates:
+  z83_reg:
+    - "{dir_z83_reg}/{z_ver1}"
+    - "{dir_z83_reg}/{z_ver2}"
+
+  b83_reg:
+    - "{dir_b83_reg}/{b_ver1}"
+
+  b83_corp:
+    - "{dir_b83_corp}/{b_ver1}"
+
+  b83_basic:
+    - "{dir_b83_basic}/{b_ver1}"

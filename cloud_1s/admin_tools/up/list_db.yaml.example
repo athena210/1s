@@ -1,0 +1,12 @@
+z83_reg:
+  - /srv/1sdb1/w8z/base1
+  - /srv/1sdb1/w8z/base2
+
+b83_reg:
+  - /srv/1sdb1/w8b/base3
+
+b83_corp:
+  - /srv/1sdb1/w8b/base4
+
+b83_basic:
+  - /srv/1sdb1/w8b/base5

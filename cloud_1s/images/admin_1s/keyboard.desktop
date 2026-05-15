@@ -1,0 +1,5 @@
+[Desktop Entry]
+Exec=setxkbmap -layout us,ru -option grp:alt_shift_toggle
+Name=Keyboard layouts
+Type=Application
+Version=1.0

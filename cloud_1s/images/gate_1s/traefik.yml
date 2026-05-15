@@ -1,0 +1,19 @@
+
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+#api:
+#  dashboard: true
+#  insecure: true
+
+providers:
+  docker:
+    exposedByDefault: false
+
+entryPoints:
+  "1s":
+    address: ":80"
+    http:
+      maxHeaderBytes: 8388608
+      encodequerysemicolons: true

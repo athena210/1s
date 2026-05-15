@@ -1,0 +1,13 @@
+
+# disk stats
+lsblk -o NAME,KNAME,TYPE,SIZE,MOUNTPOINT
+iostat -z 10 dm-1 dm-2 dm-3 dm-13 -sh
+
+# redis vars
+redis-cli -h "$REDIS_IP" SET "license:hasp_addr:b83_abc" 0 EX 900
+redis-cli -h "$REDIS_IP" --scan --pattern "license*"
+redis-cli -h "$REDIS_IP" --raw get "license:hasp_addr:b83_abc"
+# redis events
+redis-cli -h "$REDIS_IP" PUBLISH "event:command" "all reset"
+redis-cli -h "$REDIS_IP" PUBLISH "event:command" "b83_abc reset"
+

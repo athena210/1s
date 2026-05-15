@@ -1,0 +1,17 @@
+#!/bin/bash
+
+docker network create -d bridge \
+  --internal \
+  --subnet=10.0.0.0/24 \
+  --gateway=10.0.0.1 \
+  cluster_net
+
+
+docker network create -d macvlan \
+  --subnet=192.168.0.0/24 \
+  --gateway=192.168.0.1 \
+  -o parent=srv2-vlan-b \
+  vlan62-net
+
+
+docker network ls

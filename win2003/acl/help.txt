@@ -1,0 +1,9 @@
+constants
+https://github.com/saltstack/salt-windows-install/blob/master/deps/salt/python/App/Lib/site-packages/win32/lib/ntsecuritycon.py
+http://timgolden.me.uk/pywin32-docs/win32_constants.html
+
+module
+http://timgolden.me.uk/pywin32-docs/contents.html
+
+example
+http://timgolden.me.uk/python/win32_how_do_i/add-security-to-a-file.html#the-short-version

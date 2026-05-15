@@ -1,0 +1,198 @@
+
+volumes:
+  admin_1s_admin_home:
+    name: admin_1s_admin_home
+  admin_1s_root_home:
+    name: admin_1s_root_home
+
+secrets:
+  admin_password:
+    file: ./secret.admin_password
+  samba_password:
+    file: ./secret.samba_password
+
+
+networks:
+  cluster_net:
+    external: true
+  vlan62-net:
+    name: vlan62-net
+    external: true
+    ipam:
+      config:
+        - subnet: ${PUBLIC_NET}
+          gateway: ${PUBLIC_GW}
+
+
+services:
+
+  admin_1s:
+    pull_policy: never
+    image: admin_1s:${ADMIN_1S_VERSION:-none}
+    container_name: ${BASE_NAME:-admin_1s}
+    restart: unless-stopped
+#    cap_add:
+#      ### for mounting ramdrive
+#      - SYS_ADMIN
+#    security_opt:
+#      ### for mounting ramdrive
+#      - apparmor:unconfined
+    networks:
+      vlan62-net:
+        ipv4_address: ${PUBLIC_IP_ADMIN_1S}
+      cluster_net:
+        ipv4_address: ${CLUSTER_IP_ADMIN_1S}
+    environment:
+      - HASP_SERVER=${HASP_SERVER}
+      - REDIS_IP=${CLUSTER_IP_REDIS_1S}
+      ### defaults:
+      # - DIR_USER=${DIR_USER}
+      # - DIR_GROUP=${DIR_GROUP}
+    hostname: ${BASE_NAME:-admin_1s}
+    dns:
+      - ${PUBLIC_DNS}
+    volumes:
+      - admin_1s_admin_home:/home/user1s
+      - admin_1s_root_home:/root
+      - /srv/1sdb1:/srv/1sdb1
+      - /srv/1sadmin:/srv/1sadmin
+      - ./admin_tools:/srv/admin_tools
+#      - /srv/1sdaily:/srv/1sdaily
+#      - /srv/1smonthly:/srv/1smonthly
+    secrets:
+      - admin_password
+
+
+  backup_1s:
+    pull_policy: never
+    image: backup_1s:${BACKUP_1S_VERSION:-none}
+    container_name: ${BASE_NAME:-backup_1s}
+    restart: unless-stopped
+    cap_add:
+      ### for default route
+      - NET_ADMIN
+    networks:
+      cluster_net:
+        ipv4_address: ${CLUSTER_IP_BACKUP_1S}
+    environment:
+      - CLUSTER_GW=${CLUSTER_GW}
+      - REDIS_IP=${CLUSTER_IP_REDIS_1S}
+      ### defaults:
+      # - STORAGE_DAILY=/srv/1sdaily
+      # - STORAGE_DAILY_NUM=3
+      # - STORAGE_MONTHLY=/srv/1smonthly
+      # - LIST_SRC_FILE=/bak.list
+      # - CRON_TIME_DAILY="*@05:00"
+      # - CRON_TIME_MONTHLY="01@05:00"
+      # - DIR_USER=${DIR_USER}
+      # - DIR_GROUP=${DIR_GROUP}
+    dns:
+      - ${CLUSTER_DNS}
+    hostname: ${BASE_NAME:-backup_1s}
+    volumes:
+      - /srv/1sdb1:/srv/1sdb1:r
+      - /srv/1sadmin:/srv/1sadmin
+      - /srv/1sdaily:/srv/1sdaily
+      - /srv/1smonthly:/srv/1smonthly
+      - ./bak.list:/bak.list
+    deploy:
+      resources:
+        limits:
+          cpus: '${CPU_LIMIT_BACKUP_1S}'
+
+
+  gate_1s:
+    pull_policy: never
+    image: gate_1s:${GATE_1S_VERSION:-none}
+    container_name: ${BASE_NAME:-gate_1s}
+    restart: unless-stopped
+    cap_add:
+      ### for iptables
+      - NET_ADMIN
+    networks:
+      vlan62-net:
+        ipv4_address: ${PUBLIC_IP_GATE_1S}
+      cluster_net:
+        ipv4_address: ${CLUSTER_GW}
+    environment:
+      - USE_DNS=${PUBLIC_DNS}
+      - CLUSTER_NET=${CLUSTER_NET}
+    dns:
+      - 127.0.0.1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - ./traefik.yml:/traefik.yml
+
+
+  redis_1s:
+    pull_policy: never
+    image: redis_1s:${REDIS_1S_VERSION:-none}
+    container_name: ${BASE_NAME:-redis_1s}
+    restart: unless-stopped
+    networks:
+      cluster_net:
+        ipv4_address: ${CLUSTER_IP_REDIS_1S}
+    dns:
+      - ${CLUSTER_DNS}
+    hostname: ${BASE_NAME:-redis_1s}
+
+
+  samba_1s:
+    pull_policy: never
+    image: samba_1s:${SAMBA_1S_VERSION:-none}
+    container_name: ${BASE_NAME:-samba_1s}
+    restart: unless-stopped
+    networks:
+      vlan62-net:
+        ipv4_address: ${PUBLIC_IP_SAMBA_1S}
+    # environment:
+    #   ### defaults:
+    #   - DIR_USER=${DIR_USER}
+    #   - DIR_GROUP=${DIR_GROUP}
+    hostname: ${BASE_NAME:-samba_1s}
+    dns:
+      - ${PUBLIC_DNS}
+    volumes:
+      - /srv/1sdb1:/srv/1sdb1
+      - /srv/1sadmin:/srv/1sadmin
+      - /srv/1sdaily:/srv/1sdaily
+      - /srv/1smonthly:/srv/1smonthly
+    secrets:
+      - admin_password
+      - samba_password
+
+
+  worker_1s:
+    pull_policy: never
+    image: worker_1s:${WORKER_1S_VERSION:-none}
+    container_name: "worker_1s-${BASE_NAME}"
+    restart: unless-stopped
+    cap_add:
+      #### for default route
+      - NET_ADMIN
+    networks:
+      cluster_net:
+        ipv4_address: ${CLUSTER_IP}
+    environment:
+      - BASE_NAME=${BASE_NAME}
+      - HASP_SERVER=${HASP_SERVER}
+      - CLUSTER_GW=${CLUSTER_GW}
+      - REDIS_IP=${CLUSTER_IP_REDIS_1S}
+      ### defaults:
+      # - DIR_USER=${DIR_USER}
+      # - DIR_GROUP=${DIR_GROUP}
+      # - TIME_LOOP=10
+      # - NO_USERS_SEEN_TO_RESTART=180
+      ###
+      ### Status updates every TIME_LOOP sec. Restart conditions is being checked when
+      ### lic=0 stays longer than (TIME_LOOP * NO_USERS_SEEN_TO_RESTART) sec
+    dns:
+      - ${CLUSTER_DNS}
+    volumes:
+      - ${BASE_DIR:-none}:/db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=cluster_net"
+      - "traefik.http.services.${BASE_NAME}.loadbalancer.server.port=80"
+      - "traefik.http.routers.${BASE_NAME}.rule=PathPrefix(`/${BASE_NAME}`)"
+      - "traefik.http.routers.${BASE_NAME}.entrypoints=1s"

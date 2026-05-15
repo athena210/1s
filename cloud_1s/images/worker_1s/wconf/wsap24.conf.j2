@@ -1,0 +1,10 @@
+<IfModule _1cws_module>
+    Alias "/{{ BASE_NAME }}" "/var/1spub/db/"
+    <Directory "/var/1spub/db/">
+        AllowOverride All
+        Options None
+        Require all granted
+        SetHandler 1c-application
+        ManagedApplicationDescriptor "/var/1spub/db/default.vrd"
+    </Directory>
+</IfModule>

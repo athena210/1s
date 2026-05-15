@@ -1,0 +1,5 @@
+@echo off
+
+SET "REMOTEDIR=\\cloud-samba\1c\bak"
+SET "REMOTEUSER=samba_user"
+SET "REMOTEPASS=Password1234"
