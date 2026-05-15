@@ -1,12 +1,12 @@
 #!/bin/bash
 
-IMAGE_NAME="worker_1s"
 WD="worker_1s"
+IMAGE_NAME="worker_1s"
 IMAGE_TAG="${2:-1}"
 basic_image="basic_1s:${3:-1}"
 
 file_distr="$1"
-newver=$(echo "$(basename "$file_distr")" | sed -n 's/^server64_with_all_clients_\([0-9]\{1,\}_[0-9]\{1,\}_[0-9]\{1,\}_[0-9]\{1,\}\)\.zip$/\1/p' | tr '_' '.')      #"
+newver=$(basename "$file_distr" | sed -n 's/^server64_with_all_clients_\([0-9]\{1,\}_[0-9]\{1,\}_[0-9]\{1,\}_[0-9]\{1,\}\)\.zip$/\1/p' | tr '_' '.')      #"
 
 if [ -z "$newver" ] || [ ! -f "$file_distr" ] ; then
     echo "Usage:"

@@ -154,6 +154,7 @@ tmpfile=$(mktemp) || exit 1
     > "$tmpfile"
 exec 3< "$tmpfile"
 
+# shellcheck disable=SC2034
 while read -r HASP_SERVER BASE_DIR JUNK <&3; do
     BASE_NAME="$(basename "$BASE_DIR")"
     SERVICE_NAME="worker_1s"
@@ -196,6 +197,8 @@ while read -r HASP_SERVER BASE_DIR JUNK <&3; do
                 [ "$NAME" = "empty_name" ] || \
                 [ "$NAME" = "$instance_class" ]
             then
+                # shellcheck disable=SC2097
+                # shellcheck disable=SC2098
                 BASE_NAME="$BASE_NAME" BASE_DIR="$BASE_DIR" HASP_SERVER="$HASP_SERVER" CLUSTER_IP="$CLUSTER_IP" \
                     docker compose -p "$BASE_NAME" -f compose-templates.yml up -d "$SERVICE_NAME" || true
             fi
@@ -222,6 +225,8 @@ while read -r HASP_SERVER BASE_DIR JUNK <&3; do
                 [ "$NAME" = "empty_name" ] || \
                 [ "$NAME" = "$instance_class" ]
             then
+                # shellcheck disable=SC2097
+                # shellcheck disable=SC2098
                 BASE_NAME="$BASE_NAME" BASE_DIR="$BASE_DIR" HASP_SERVER="$HASP_SERVER" CLUSTER_IP="$CLUSTER_IP" \
                     docker compose -p "$BASE_NAME" -f compose-templates.yml down "$SERVICE_NAME" || true
             fi
@@ -248,6 +253,8 @@ while read -r HASP_SERVER BASE_DIR JUNK <&3; do
             fi
 
             if  [ "$NAME" = "$BASE_NAME" ] ; then
+                # shellcheck disable=SC2097
+                # shellcheck disable=SC2098
                 BASE_NAME="$BASE_NAME" BASE_DIR="$BASE_DIR" HASP_SERVER="$HASP_SERVER" CLUSTER_IP="$CLUSTER_IP" \
                     docker compose -p "$BASE_NAME" -f compose-templates.yml logs "$SERVICE_NAME"
             fi
@@ -276,6 +283,8 @@ while read -r HASP_SERVER BASE_DIR JUNK <&3; do
             if  [ "$NAME" = "$BASE_NAME" ] ; then
 
                 [ "$#" -lt 2 ] || shift 2
+                # shellcheck disable=SC2097
+                # shellcheck disable=SC2098
                 BASE_NAME="$BASE_NAME" BASE_DIR="$BASE_DIR" HASP_SERVER="$HASP_SERVER" CLUSTER_IP="$CLUSTER_IP" \
                     docker compose -p "$BASE_NAME" -f compose-templates.yml exec "$SERVICE_NAME" "$@"
             fi

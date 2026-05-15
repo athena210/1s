@@ -21,12 +21,12 @@ print_db_sizes() {
     find "$db_storage" \
         -path "$db_storage/lost+found" -prune -o \
         -type f -iname "1cv8.1cd" -print | \
-        sort | while read fname
+        sort | while read -r fname
     do
-        du -xhd0 $(dirname "$fname") >> $sortfile
+        du -xhd0 "$(dirname "$fname")" >> "$sortfile"
     done
-    cat $sortfile | sort -h
-    rm -f $sortfile
+    cat "$sortfile" | sort -h
+    rm -f "$sortfile"
 }
 
 
@@ -39,11 +39,11 @@ print_search_sizes() {
         -type d -iname "1Cv8FTxt" -print | \
         sort | while read fname
     do
-        du -xhd0 "$fname" >> $sortfile
+        du -xhd0 "$fname" >> "$sortfile"
         [ "$and_delete" = "and_delete" ] && rm -rf "$fname"
     done
-    cat $sortfile | sort -h
-    rm -f $sortfile
+    cat "$sortfile" | sort -h
+    rm -f "$sortfile"
 }
 
 
@@ -54,13 +54,13 @@ print_journals() {
     find "$db_storage" \
         -path "$db_storage/lost+found" -prune -o \
         -type d -iname "1Cv8Log" -print | \
-        sort | while read fname
+        sort | while read -r fname
     do
-        du -xhd0 "$fname" >> $sortfile
+        du -xhd0 "$fname" >> "$sortfile"
         [ "$and_delete" = "and_delete" ] && rm -rf "$fname"
     done
-    cat $sortfile | sort -h
-    rm -f $sortfile
+    cat "$sortfile" | sort -h
+    rm -f "$sortfile"
 }
 
 
@@ -69,8 +69,10 @@ clean_updates() {
     base_path="$updates_storage"
     storages="Accounting AccountingBase AccountingCorp hrm"
     for stor in $storages; do
-        ls -1 "${base_path}/${stor}"|sort -h|head -n -10| while read dname; do
+        # shellcheck disable=SC2012
+        ls -1 "${base_path}/${stor}"|sort -h|head -n -10| while read -r dname; do
             echo   "${base_path}/${stor}/${dname}"
+            # shellcheck disable=SC2115
             rm -rf "${base_path}/${stor}/${dname}"
         done
     done

@@ -14,8 +14,8 @@ then
 fi
 
 rec() {
-    TITLE=$(basename $1)
     DB_PATH="$1"
+    TITLE=$(basename "$DB_PATH")
     envsubst <<-EOF
 [$TITLE]
 Connect=File="$DB_PATH";
@@ -29,7 +29,7 @@ find "$db_storage" \
     -name "a8b" -type d -prune -o \
     -name "a8z" -type d -prune -o \
     -type f -iname "1cv8.1cd" -print | \
-    sort | while read fname
+    sort | while read -r fname
 do
     rec "$(dirname "$fname")" | sed 's/$/\r/g' >> "$start_config"
 done

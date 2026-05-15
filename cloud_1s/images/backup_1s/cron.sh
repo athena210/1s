@@ -64,17 +64,21 @@ archive_the_base() {
 remove_olds() {
     SAVE_LAST="$1"
     DIR="$2"
-    if ! ([ "$SAVE_LAST" -eq "$SAVE_LAST" ] 2>/dev/null && [ "$SAVE_LAST" -gt 0 ]) ; then
+
+    if \
+        ! [ "$SAVE_LAST" -eq "$SAVE_LAST" ] 2>/dev/null && \
+        [ "$SAVE_LAST" -gt 0 ]
+    then
         echo "ERROR: SAVE_LAST must be positive integer ($SAVE_LAST)"
         return 1
     fi
     [ -d "$DIR" ] || return 0
-    res=0
+    # shellcheck disable=SC2012
     ls -1v "$DIR/"*.7z 2> /dev/null | head -n "-${SAVE_LAST}" | \
         while read -r FILE ; do
-            rm -f "$FILE" || res=1
+            rm -f "$FILE"
         done
-    return "$res"
+    return 0
 }
 
 
@@ -112,41 +116,43 @@ start_backup() {
             ;;
     esac
 
-    ( \
+    {
         [ -n "$DST_PATH" ] && \
         [ -d "$DST_PATH" ] && \
         [ -n "$LIST_SRC_FILE" ] && \
-        [ -f "$LIST_SRC_FILE" ] \
-    ) || return
+        [ -f "$LIST_SRC_FILE" ]
+    } || return
 
     redis-cli -h "$REDIS_IP" PUBLISH "event:command" "all reset"
     sleep 3
 
+    # shellcheck disable=SC2034
     cat "$LIST_SRC_FILE" | \
     sed 's/^[[:space:]]*//' | \
     sed '/^$/d' | \
     sed '/^#/d' | \
     while read -r TYPE STATUS SRC_PATH JUNK ; do
 
-        ( \
+        {
             [ -n "$SRC_PATH" ] && \
             [ -d "$SRC_PATH" ] && \
             [ -n "$TYPE" ] && \
-            [ -n "$STATUS" ] \
-        ) || continue
+            [ -n "$STATUS" ]
+        } || continue
 
         stor_name="$(basename "$SRC_PATH")"
-
+        # shellcheck disable=SC2012
         ls -1 "$SRC_PATH" | \
             while read -r DIR ; do
 
-                ([ "$BASE_NAME" = "empty_name" ] || [ "$DIR" = "$BASE_NAME" ]) || continue
+                { [ "$BASE_NAME" = "empty_name" ] || [ "$DIR" = "$BASE_NAME" ]; } || continue
 
                 case "$TYPE" in
                     src)
-                        if (([ "$COMMAND" = "daily" ]   && [ "$STATUS" = "w" ]) || \
+                        # shellcheck disable=SC2235
+                        if  ([ "$COMMAND" = "daily" ]   && [ "$STATUS" = "w" ]) || \
                             ([ "$COMMAND" = "monthly" ] && [ "$STATUS" = "w" ]) || \
-                            ([ "$COMMAND" = "once" ]    && [ "$STATUS" = "a" ]))
+                            ([ "$COMMAND" = "once" ]    && [ "$STATUS" = "a" ])
                         then
                             mkdir -p "$DST_PATH/$stor_name/$DIR"
                             archive_the_base "$SRC_PATH/$DIR" "$DST_PATH/$stor_name/$DIR" || echo "ERROR: archive failed $DST_PATH/$stor_name/$DIR"
@@ -154,11 +160,13 @@ start_backup() {
                         fi
                         ;;
                     buf)
-                        if (([ "$COMMAND" = "daily" ]   && [ "$STATUS" = "w" ]) || \
+                        # shellcheck disable=SC2235
+                        if  ([ "$COMMAND" = "daily" ]   && [ "$STATUS" = "w" ]) || \
                             [ "$COMMAND" = "monthly" ] || \
-                            [ "$COMMAND" = "once" ])
+                            [ "$COMMAND" = "once" ]
                         then
                             mkdir -p "$DST_PATH/$stor_name/$DIR"
+                            # shellcheck disable=SC2115
                             (cp -f "$SRC_PATH/$DIR"/*.7z "$DST_PATH/$stor_name/$DIR" && rm -rf "$SRC_PATH/$DIR") || echo "ERROR: cant deal with buf $DST_PATH/$stor_name/$DIR"
                             [ "$COMMAND" != "daily" ] || remove_olds "$backup_daily_num" "$DST_PATH/$stor_name/$DIR"
                         fi
@@ -193,6 +201,7 @@ fi
 while true ; do
 
     time_now="$(date '+%d@%H:%M')"
+    # shellcheck disable=SC2254
     case "$time_now" in
         $time_monthly)
             start_backup monthly
