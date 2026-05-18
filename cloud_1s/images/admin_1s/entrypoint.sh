@@ -27,7 +27,7 @@ jinjanate /wconf/nethasp.ini.j2 -o /opt/1cv8/conf/nethasp.ini --undefined
 chmod 644 /opt/1cv8/conf/nethasp.ini
 
 echo "RU keyboard"
-mv -f /keyboard.desktop "/home/user1s/.config/autostart/"
+mv -f /keyboard.desktop "/home/user1s/.config/autostart/" || true
 
 echo "Starting supervisor"
 exec /usr/bin/supervisord -c /supervisord.conf
