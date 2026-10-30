@@ -19,12 +19,13 @@ ENV \
     DIR_GROUP=1100
 
 RUN \
+    echo 'deb http://gb.archive.ubuntu.com/ubuntu jammy main' >> /etc/apt/sources.list &&\
     DEBIAN_FRONTEND=noninteractive apt-get update &&\
     DEBIAN_FRONTEND=noninteractive apt-get install -y \
         tigervnc-standalone-server \
         lxqt-core \
         dbus-x11 \
-        libwebkit2gtk-4.1-0 \
+        libwebkit2gtk-4.0-37 \
         sudo \
         mc &&\
     rm -rf /var/lib/apt/lists/*
@@ -33,7 +34,9 @@ RUN --mount=type=bind,source=${FILE_DISTR},target=/1s.zip \
     mkdir -p /1s &&\
     unzip /1s.zip -d /1s &&\
     /1s/setup-full-${VERSION_1S}-x86_64.run --mode unattended --enable-components additional_admin_functions,client_full,client_thin,desktop_icons,integrity_monitoring,liberica_jre,ru &&\
-    rm -rf /1s
+    rm -rf /1s &&\
+    ln -nsf /lib/x86_64-linux-gnu/libstdc++.so.6 /opt/1cv8/common/libstdc++.so.6 &&\
+    ln -nsf /lib/x86_64-linux-gnu/libstdc++.so.6 /opt/1cv8/x86_64/${VERSION_1S}/libstdc++.so.6
 
 RUN \
     mkdir -p /srv/1sdb1 /srv/1sadmin

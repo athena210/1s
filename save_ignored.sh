@@ -8,6 +8,7 @@ git ls-files -oi --exclude-standard -z |\
 grep -zv \
     -e "^.trunk" \
     -e "^.vscode" \
+    -e "^ignored_files" \
     -e "^cloud_1s/images/server64_" \
     -e "^cloud_1s/images_backup/" \
     -e "secret.admin_password" |\
